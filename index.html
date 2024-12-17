@@ -102,22 +102,22 @@
 
 		info.update = function (props) {
 			this._div.innerHTML = '<h4>Jumlah Jamaah Haji 2023 Riau</h4>' + (props ?
-				'<b>' + props.dist_ina + '</b><br />' + props.haji + ' %' : 'Gerakkan mouse Anda');
+				'<b>' + props.dist_ina + '</b><br />' + props.haji + ' orang' : 'Gerakkan mouse Anda');
 		};
 
 		info.addTo(map);
 
 		// Fungsi untuk menentukan warna berdasarkan data haji
 		function getColor(d) {
-			return d > 900 ? '#800026' :
-				d > 800 ? '#BD0026' :
-					d > 700 ? '#E31A1C' :
-						d > 600 ? '#FC4E2A' :
-							d > 500 ? '#FD8D3C' :
-								d > 400 ? '#FEB24C' :
-									d > 300 ? '#FED976' :
-										d > 200 ? '#FFEDA0' :
-											'#FFFB00'; // Tambahkan warna untuk rentang di bawah 200
+			return d > 900 ? '#006400' :  // Dark Green
+				d > 800 ? '#228B22' :  // Forest Green
+					d > 700 ? '#32CD32' :  // Lime Green
+						d > 600 ? '#66CDAA' :  // Medium Aquamarine
+							d > 500 ? '#98FB98' :  // Pale Green
+								d > 400 ? '#00FA9A' :  // Medium Spring Green
+									d > 300 ? '#00FF7F' :  // Spring Green
+										d > 200 ? '#7CFC00' :  // Lawn Green
+											'#ADFF2F';  // Green Yellow
 		}
 
 
