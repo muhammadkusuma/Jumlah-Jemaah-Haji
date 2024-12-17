@@ -1,43 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-	<meta charset="UTF-8">
+	<title>Jumlah Jamaah Haji 2023 Riau</title>
+	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Jumlah Jemaah Haji 2023</title>
+	<!-- Memuat CSS untuk Leaflet -->
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
 	<style>
-		html,
-		body,
-		#map {
-			height: 100%;
-			margin: 0px;
-			padding: 0px;
-		}
-
-		.leaflet-control-attribution {
-			display: none !important;
-		}
-
+      html, body, #map{
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+			.leaflet-control-attribution { display:none!important}
 		.info {
 			padding: 6px 8px;
 			font: 14px/16px Arial, Helvetica, sans-serif;
-			background: rgba(255, 255, 255, 0.8);
-			box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+			background: white;
+			background: rgba(255,255,255,0.8);
+			box-shadow: 0 0 15px rgba(0,0,0,0.2);
 			border-radius: 5px;
 		}
-
 		.info h4 {
 			margin: 0 0 5px;
 			color: #777;
 		}
-
 		.legend {
 			text-align: left;
 			line-height: 18px;
 			color: #555;
 		}
-
 		.legend i {
 			width: 18px;
 			height: 18px;
@@ -47,22 +39,48 @@
 		}
 	</style>
 </head>
-
 <body>
 	<div id="map"></div>
+
+	<!-- Memuat Leaflet JS -->
 	<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+  
+	<!-- Memuat file GeoJSON secara eksternal -->
+	<script src="riau_kabkot.geojson"></script>
+  
+	<script type="text/javascript">
+		var sukajadi = [0.526452500644619, 101.43842513074193]; // Koordinat Sukajadi
 
-	<!-- Script untuk mengambil file GeoJSON eksternal -->
-	<script>
-		// Inisialisasi peta
-		var map = L.map('map').setView([0.9514, 101.0182], 8); // Koordinat untuk Riau
+		// Membuat peta dengan Leaflet
+		var map = L.map('map').setView(sukajadi, 8);
 
-		// Menambahkan layer peta dasar
-		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-		}).addTo(map);
+		// Menambahkan tile layer (basemap)
+		var carto_positron_lite_rainbow = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png", {
+			subdomains: "abcd",
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+			maxZoom: 18
+		});
 
-		// Info box untuk menampilkan data saat fitur dipilih
+		// Menambahkan tile layer alternatif Google
+		var googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+			maxZoom: 20,
+			subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+		});
+
+		var baseLayers = {
+			"Street Map": carto_positron_lite_rainbow,
+			"Google Streets": googleStreets
+		};
+
+		var overlayMaps = {
+			// overlay layer bisa ditambahkan di sini
+		};
+
+		// Menambahkan kontrol layer untuk memilih basemap
+		L.control.layers(baseLayers, overlayMaps).addTo(map);
+		carto_positron_lite_rainbow.addTo(map); // Menambahkan peta default
+
+		// Control untuk menampilkan info ketika hover
 		var info = L.control();
 
 		info.onAdd = function (map) {
@@ -72,25 +90,25 @@
 		};
 
 		info.update = function (props) {
-			this._div.innerHTML = '<h4>Jumlah Jemaah Haji 2023</h4>' + (props ?
-				'<b>' + props.dist_ina + '</b><br />' + props.haji + ' jemaah'
-				: 'Gerakkan mouse Anda');
+			this._div.innerHTML = '<h4>Jumlah Jamaah Haji 2023 Riau</h4>' + (props ?
+				'<b>' + props.dist_ina + '</b><br />' + props.haji + ' %' : 'Gerakkan mouse Anda');
 		};
 
 		info.addTo(map);
 
-		// Fungsi untuk menentukan warna berdasarkan jumlah jemaah
+		// Fungsi untuk menentukan warna berdasarkan data haji
 		function getColor(d) {
-			return d > 900 ? '#800026' :
-				d > 750 ? '#BD0026' :
-					d > 600 ? '#E31A1C' :
-						d > 500 ? '#FC4E2A' :
-							d > 400 ? '#FD8D3C' :
-								d > 300 ? '#FEB24C' :
-									d > 200 ? '#FED976' :
-										'#FFEDA0';
+			return d > 87 ? '#800026' :
+			       d > 75 ? '#BD0026' :
+			       d > 62 ? '#E31A1C' :
+			       d > 50 ? '#FC4E2A' :
+			       d > 37 ? '#FD8D3C' :
+			       d > 25 ? '#FEB24C' :
+			       d > 12 ? '#FED976' :
+			                 '#FFEDA0';
 		}
 
+		// Fungsi untuk memberi style pada setiap feature
 		function style(feature) {
 			return {
 				weight: 2,
@@ -102,41 +120,59 @@
 			};
 		}
 
-		// Mengambil data GeoJSON eksternal menggunakan fetch
-		fetch('riau_kabkot.geojson') // Gantilah dengan URL file GeoJSON Anda
-			.then(response => response.json())
-			.then(data => {
-				// Menambahkan layer GeoJSON ke peta
-				L.geoJSON(data, {
-					style: style,
-					onEachFeature: function (feature, layer) {
-						layer.on({
-							mouseover: function (e) {
-								var layer = e.target;
-								layer.setStyle({
-									weight: 5,
-									color: '#666',
-									dashArray: '',
-									fillOpacity: 0.7
-								});
-								info.update(layer.feature.properties);
-							},
-							mouseout: function (e) {
-								geojson.resetStyle(e.target);
-								info.update();
-							}
-						});
-					}
-				}).addTo(map);
-			})
-			.catch(error => console.log('Error loading GeoJSON: ', error));
+		// Fungsi untuk highlight feature ketika mouseover
+		function highlightFeature(e) {
+			var layer = e.target;
 
-		// Legenda untuk peta
+			layer.setStyle({
+				weight: 5,
+				color: '#666',
+				dashArray: '',
+				fillOpacity: 0.7
+			});
+
+			if (!L.Browser.ie && !L.Browser.opera) {
+				layer.bringToFront();
+			}
+
+			info.update(layer.feature.properties);
+		}
+
+		// Fungsi untuk reset highlight ketika mouseout
+		function resetHighlight(e) {
+			geojson.resetStyle(e.target);
+			info.update();
+		}
+
+		// Fungsi untuk zoom ke feature ketika di-klik
+		function zoomToFeature(e) {
+			map.fitBounds(e.target.getBounds());
+		}
+
+		// Fungsi untuk setiap feature di geoJSON
+		function onEachFeature(feature, layer) {
+			layer.on({
+				mouseover: highlightFeature,
+				mouseout: resetHighlight,
+				click: zoomToFeature
+			});
+		}
+
+		// Memasukkan geoJSON ke peta
+		var geojson;
+
+		geojson = L.geoJson(riau_haji, {
+			style: style,
+			onEachFeature: onEachFeature
+		}).addTo(map);
+		map.fitBounds(geojson.getBounds()); // Agar peta menyesuaikan dengan batas geoJSON
+
+		// Membuat legend untuk peta
 		var legend = L.control({ position: 'bottomright' });
 
 		legend.onAdd = function (map) {
 			var div = L.DomUtil.create('div', 'info legend'),
-				grades = [0, 200, 300, 400, 500, 600, 750, 900],
+				grades = [0, 12, 25, 37, 50, 62, 75, 87],
 				labels = [],
 				from, to;
 
@@ -146,7 +182,8 @@
 
 				labels.push(
 					'<i style="background:' + getColor(from + 1) + '"></i> ' +
-					from + (to ? '&ndash;' + to : '+'));
+					from + (to ? '&ndash;' + to : '+')
+				);
 			}
 
 			div.innerHTML = '<h4>Legenda:</h4><br>' + labels.join('<br>');
@@ -156,5 +193,4 @@
 		legend.addTo(map);
 	</script>
 </body>
-
 </html>
