@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<title>Jumlah Jamaah Haji 2023 Riau</title>
 	<meta charset="utf-8" />
@@ -7,29 +8,38 @@
 	<!-- Memuat CSS untuk Leaflet -->
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
 	<style>
-      html, body, #map{
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-			.leaflet-control-attribution { display:none!important}
+		html,
+		body,
+		#map {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+		.leaflet-control-attribution {
+			display: none !important
+		}
+
 		.info {
 			padding: 6px 8px;
 			font: 14px/16px Arial, Helvetica, sans-serif;
 			background: white;
-			background: rgba(255,255,255,0.8);
-			box-shadow: 0 0 15px rgba(0,0,0,0.2);
+			background: rgba(255, 255, 255, 0.8);
+			box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 			border-radius: 5px;
 		}
+
 		.info h4 {
 			margin: 0 0 5px;
 			color: #777;
 		}
+
 		.legend {
 			text-align: left;
 			line-height: 18px;
 			color: #555;
 		}
+
 		.legend i {
 			width: 18px;
 			height: 18px;
@@ -39,15 +49,16 @@
 		}
 	</style>
 </head>
+
 <body>
 	<div id="map"></div>
 
 	<!-- Memuat Leaflet JS -->
 	<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
-  
+
 	<!-- Memuat file GeoJSON secara eksternal -->
 	<script src="riau_kabkot.geojson"></script>
-  
+
 	<script type="text/javascript">
 		var sukajadi = [0.526452500644619, 101.43842513074193]; // Koordinat Sukajadi
 
@@ -98,15 +109,17 @@
 
 		// Fungsi untuk menentukan warna berdasarkan data haji
 		function getColor(d) {
-			return d > 87 ? '#800026' :
-			       d > 75 ? '#BD0026' :
-			       d > 62 ? '#E31A1C' :
-			       d > 50 ? '#FC4E2A' :
-			       d > 37 ? '#FD8D3C' :
-			       d > 25 ? '#FEB24C' :
-			       d > 12 ? '#FED976' :
-			                 '#FFEDA0';
+			return d > 900 ? '#800026' :
+				d > 800 ? '#BD0026' :
+					d > 700 ? '#E31A1C' :
+						d > 600 ? '#FC4E2A' :
+							d > 500 ? '#FD8D3C' :
+								d > 400 ? '#FEB24C' :
+									d > 300 ? '#FED976' :
+										d > 200 ? '#FFEDA0' :
+											'#FFFB00'; // Tambahkan warna untuk rentang di bawah 200
 		}
+
 
 		// Fungsi untuk memberi style pada setiap feature
 		function style(feature) {
@@ -193,4 +206,5 @@
 		legend.addTo(map);
 	</script>
 </body>
+
 </html>
