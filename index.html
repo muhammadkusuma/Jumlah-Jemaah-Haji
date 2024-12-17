@@ -1,13 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-	<title>Jumlah Jemaah Haji 2023 </title>
-	<meta charset="utf-8" />
-
+	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-	<!--link rel="stylesheet" href="https://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" /-->
+	<title>Jumlah Jemaah Haji 2023</title>
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
 	<style>
 		html,
@@ -15,17 +12,16 @@
 		#map {
 			height: 100%;
 			margin: 0px;
-			padding: 0px
+			padding: 0px;
 		}
 
 		.leaflet-control-attribution {
-			display: none !important
+			display: none !important;
 		}
 
 		.info {
 			padding: 6px 8px;
 			font: 14px/16px Arial, Helvetica, sans-serif;
-			background: white;
 			background: rgba(255, 255, 255, 0.8);
 			box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 			border-radius: 5px;
@@ -54,102 +50,57 @@
 
 <body>
 	<div id="map"></div>
-
-	<!--script src="https://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script-->
 	<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
 
-	<!--script type="text/javascript" src="https://gist.github.com/kampar/430220edbe06c3237e66/raw/ca02fb8bcffc0523832070d231ba9592918e0b3f/kelurahan.js"></script-->
-	<script src="riau_kabkot.geojson"></script>
-	<script type="text/javascript">
-		//perhatikan bahwa format di sini adalah LatLong, sedangkan di JSON adalah LongLat
+	<!-- Include GeoJSON data for Riau Kab/Kota -->
+	<script>
+		var riau_haji = {
+			"type": "FeatureCollection",
+			"name": "riau_kabkot",
+			"crs": {
+				"type": "name",
+				"properties": {
+					"name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+				}
+			},
+			"features": [
+				{
+					"type": "Feature",
+					"properties": {
+						"objectid": 436.0,
+						"id_dist": 1401.0,
+						"dist_eng": "Kampar",
+						"dist_ina": "Kampar",
+						"haji": 856
+					},
+					"geometry": {
+						"type": "MultiPolygon",
+						"coordinates": [
+							[
+								[
+									[101.0182, 0.9514],
+									[101.0377, 0.947],
+									[101.0412, 0.957],
+									[101.0331, 0.9617],
+									[101.0182, 0.9514]
+								]
+							]
+						]
+					}
+				}
+			]
+		};
+
 		var sukajadi = [0.526452500644619, 101.43842513074193];
+		var map = L.map('map').setView(sukajadi, 8);
 
-		//senter map di pusatnya 
-		// eh ... kamsud saya pusatkan peta di sukajadi, zoom 14
-		var map = L.map('map').setView(
-			sukajadi
-			, 8
-		);
-		//update: sekarang pakai fitBounds
-
-
-
-		/* Basemap Layers */
-
-
-		// tile layer ini sepertinya sudah expire
-		//		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
-		//			maxZoom: 18,
-		//			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-		//				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-		//				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-		//			id: 'mapbox.light'
-		//		}).addTo(map);
-
-
-		var carto_positron_lite_rainbow = L.tileLayer(
-			"https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png", {
+		var carto_positron_lite_rainbow = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png", {
 			subdomains: "abcd",
 			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 			maxZoom: 18
-		});
+		}).addTo(map);
 
-		var cartoLight = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png", {
-			maxZoom: 19,
-			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>'
-		});
-
-
-
-		var googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-			maxZoom: 20,
-			subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-		});
-
-		var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
-			maxZoom: 20,
-			subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-		});
-
-		var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-			maxZoom: 20,
-			subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-		});
-
-		var googleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
-			maxZoom: 20,
-			subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-		});
-
-		var carto_label = L.tileLayer(
-			"https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_only_labels/{z}/{x}/{y}.png", {
-			zIndex: 10,
-			subdomains: "abcd",
-			maxZoom: 18
-		});
-
-		var baseLayers = {
-			"Street Map": cartoLight,
-			"Google Streets": googleStreets,
-			"Google Hybrid": googleHybrid,
-			"Google Satellite": googleSat,
-			"Google Terrain": googleTerrain,
-			"Carto Positron": carto_positron_lite_rainbow
-		};
-
-
-		var overlayMaps = {
-			"Label": carto_label
-		};
-		L.control.layers(baseLayers, overlayMaps).addTo(map);
-		//L.control.layers(baseLayers).addTo(map);
-		//carto_positron_lite_rainbow bagus juga, jadikan default saja
-		carto_positron_lite_rainbow.addTo(map);
-
-
-
-
-		// control that shows state info on hover
+		// Control for showing info on hover
 		var info = L.control();
 
 		info.onAdd = function (map) {
@@ -160,17 +111,13 @@
 
 		info.update = function (props) {
 			this._div.innerHTML = '<h4>Jumlah Jemaah Haji 2023</h4>' + (props ?
-				'<b>' + props.dist_ina + '</b><br />' + props.haji + ' %'
+				'<b>' + props.dist_ina + '</b><br />' + props.haji + ' jemaah'
 				: 'Gerakkan mouse Anda');
 		};
 
 		info.addTo(map);
 
-
-		// get color depending on MhsSIF value
-		// perhatikan bahwa saya menggunakan pretty break 8 warna
-		// karena kita tahu bahwa data MhsSIF adalah data palsu random dari 0 - 100
-		// get color depending on the number of haji, with a broader range
+		// Function to get color based on number of jemaah (haji)
 		function getColor(d) {
 			return d > 900 ? '#800026' :
 				d > 750 ? '#BD0026' :
@@ -179,7 +126,7 @@
 							d > 400 ? '#FD8D3C' :
 								d > 300 ? '#FEB24C' :
 									d > 200 ? '#FED976' :
-										'#FFEDA0';  // Below 200 people
+										'#FFEDA0';
 		}
 
 		function style(feature) {
@@ -189,17 +136,41 @@
 				color: 'white',
 				dashArray: '3',
 				fillOpacity: 0.7,
-				fillColor: getColor(feature.properties.haji)  // Apply color based on haji count
+				fillColor: getColor(feature.properties.haji)
 			};
 		}
 
-		// Updated legend with a broader range
+		// Adding GeoJSON layer to the map
+		L.geoJSON(riau_haji, {
+			style: style,
+			onEachFeature: function (feature, layer) {
+				layer.on({
+					mouseover: function (e) {
+						var layer = e.target;
+						layer.setStyle({
+							weight: 5,
+							color: '#666',
+							dashArray: '',
+							fillOpacity: 0.7
+						});
+						info.update(layer.feature.properties);
+					},
+					mouseout: function (e) {
+						geojson.resetStyle(e.target);
+						info.update();
+					}
+				});
+			}
+		}).addTo(map);
+
+		var geojson;
+
+		// Updated legend for color scale
 		var legend = L.control({ position: 'bottomright' });
 
 		legend.onAdd = function (map) {
-
 			var div = L.DomUtil.create('div', 'info legend'),
-				grades = [0, 200, 300, 400, 500, 600, 750, 900], // Updated grades for higher values
+				grades = [0, 200, 300, 400, 500, 600, 750, 900],
 				labels = [],
 				from, to;
 
@@ -217,10 +188,7 @@
 		};
 
 		legend.addTo(map);
-
-
-
-
 	</script>
+</body>
 
 </html>
